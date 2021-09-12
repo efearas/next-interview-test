@@ -1,6 +1,8 @@
-import { useAppSelector } from "../../app/hooks";
-import { EnumSearchStatus, selectSearchResults } from "./searchResultsSlice";
+import { useAppSelector, useAppDispatch } from "../../app/hooks";
+import { EnumSearchStatus, selectSearchResults,getSearchResults } from "./searchResultsSlice";
 import styled from "styled-components";
+import { useEffect,useRef } from "react";
+
 
 const Wrapper = styled.div`
 
@@ -16,13 +18,31 @@ margin-bottom: 50px;
 
 const SearchResults = () => {
   const searchResultsState = useAppSelector(selectSearchResults);
+  const dispatch = useAppDispatch();
+  const lastLineRef = useRef(null);
+  useEffect(
+    ()=>{
+      const intersectionObserver = new IntersectionObserver(intersectHandler);
+      if(lastLineRef && lastLineRef.current){
+        intersectionObserver.observe(lastLineRef.current!)
+        console.log('observer initialized')
+      }        
+    },[searchResultsState.searchResults]
+  )
+ 
 
-
+  const intersectHandler = (entries:any[]) => {
+    if(entries[0]?.isIntersecting){
+      console.log(entries[0]);
+      dispatch(getSearchResults(false));
+    }    
+  }
+ 
   return (
     <Wrapper>
       {searchResultsState.searchResults.length > 0 &&
-        searchResultsState.searchResults.map((searchResult) => (
-          <ResultLine key={searchResult.linkUrl}>
+        searchResultsState.searchResults.map((searchResult, idx) => (
+          <ResultLine key={searchResult.linkUrl} ref={idx === searchResultsState.searchResults.length-1 ? lastLineRef : null}>
             <div>
               <a href={searchResult.linkUrl}>{searchResult.title}</a>
             </div>

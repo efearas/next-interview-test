@@ -26,13 +26,13 @@ exports[`SearchForm snapshot test 1`] = `
           role="button"
           tabindex="0"
         >
-          artist
+          album
         </div>
         <input
           aria-hidden="true"
           class="MuiSelect-nativeInput"
           tabindex="-1"
-          value="0"
+          value="1"
         />
         <svg
           aria-hidden="true"
@@ -49,8 +49,8 @@ exports[`SearchForm snapshot test 1`] = `
         class="MuiFormControl-root MuiTextField-root"
       >
         <label
-          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated"
-          data-shrink="false"
+          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiFormLabel-filled"
+          data-shrink="true"
           for="standard-basic"
           id="standard-basic-label"
         >
@@ -65,15 +65,14 @@ exports[`SearchForm snapshot test 1`] = `
             data-testid="search-term"
             id="standard-basic"
             type="text"
-            value=""
+            value="Micheal Jackson"
           />
         </div>
       </div>
       <button
-        class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary Mui-disabled Mui-disabled"
+        class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary"
         data-testid="search-button"
-        disabled=""
-        tabindex="-1"
+        tabindex="0"
         type="button"
       >
         <span
@@ -81,6 +80,9 @@ exports[`SearchForm snapshot test 1`] = `
         >
           Primary
         </span>
+        <span
+          class="MuiTouchRipple-root"
+        />
       </button>
     </div>
   </div>

@@ -25,7 +25,7 @@ enum EnumSearchType {
     artist = 0,
     album = 1,
     song = 2,
-  }
+}
 
 //type TSearchType = 'artist' | 'album' | 'song'
 
@@ -41,7 +41,7 @@ const initialState: ISearchResultsState = {
     searchResults: [],
     searchStatus: EnumSearchStatus.NeverSearched,
     searchType: EnumSearchType.album,
-    searchText: 'micheal ',
+    searchText: '',
     offset: 0,
 
 };
@@ -51,16 +51,16 @@ const attributeValues = {
     [EnumSearchType.artist]: "artistTerm",
     [EnumSearchType.album]: "albumTerm",
     [EnumSearchType.song]: "songTerm",
-  };
-  
-  const entityValues = {
+};
+
+const entityValues = {
     [EnumSearchType.artist]: "allArtist",
     [EnumSearchType.album]: "album",
     [EnumSearchType.song]: "song",
-  };
+};
 
-  
-const paramsToQueryString = (state:ISearchResultsState): string => {
+
+const paramsToQueryString = (state: ISearchResultsState): string => {
     let queryString = 'attribute=' + attributeValues[state.searchType] + '&';
     queryString += 'term=' + state.searchText + '&';
     queryString += 'entity=' + entityValues[state.searchType] + '&';
@@ -70,9 +70,9 @@ const paramsToQueryString = (state:ISearchResultsState): string => {
 
 export const getSearchResults = createAsyncThunk(
     'searchResults/fetchSearchResults',
-    async (isNewSearch: boolean,{getState}) => {
-        const globalState:any = getState();
-        const state = globalState.searchResults as ISearchResultsState;        
+    async (isNewSearch: boolean, { getState }) => {
+        const globalState: any = getState();
+        const state = globalState.searchResults as ISearchResultsState;
         const response = await fetchSearchResults(paramsToQueryString(state));
         response.searchType = state.searchType;
         response.isNewSearch = isNewSearch;
@@ -88,14 +88,15 @@ export const searchResultsSlice = createSlice({
         changeSearchType: (state, action) => {
             state.searchType = action.payload
         },
-        changeSearchText: (state,action:PayloadAction<string>) => {            
+        changeSearchText: (state, action: PayloadAction<string>) => {
             state.searchText = action.payload
-        },        
+        },
     },
     extraReducers: (builder) => {
         builder
             .addCase(getSearchResults.fulfilled, (state, action) => {
                 state.searchStatus = EnumSearchStatus.SearchCompleted;
+                if (action.payload.results.length === 0) return
                 state.searchResults = action.payload.isNewSearch ? [] : [...state.searchResults]
                 state.searchResults = [...state.searchResults, ...action.payload.results.map(
                     (result: any) => {
@@ -105,7 +106,11 @@ export const searchResultsSlice = createSlice({
                             text: JSON.stringify(result),
                         }
                     }
-                )]
+                )].reduce((acc, cur) => {
+                    if (acc.findIndex((f: any) => f.linkUrl === cur.linkUrl) === -1)
+                        acc.push(cur);
+                    return acc;
+                }, []);
                 state.offset = state.searchResults.length;
             })
             .addCase(getSearchResults.pending, (state) => {
